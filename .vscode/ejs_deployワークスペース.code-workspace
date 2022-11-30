@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": ".."
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "workbench.colorTheme": "Hopscotch Mono",
+    "workbench.colorCustomizations": {
+      // "editor.background": "#353c2a42",
+      "titleBar.activeBackground": "#9e6565",
+      "titleBar.activeForeground": "#fff",
+      "statusBar.background": "#9e6565",
+      "statusBar.foreground": "#fff",
+      "sidebar.background": "#ff0000"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ejs sample</title>
+</head>
+
+<body>
+  <%- include(`header`) -%>
+  <div>
+    <hr>
+    パラメータ
+    <%= JSON.stringify(params) %>
+  </div>
+  <article>
+    <hr>
+    <h1>POSTテスト json操作</h1>
+    <div style="background:#eee;padding:1em;border-radius:0.3em;">
+      <pre>
+// サーバーからitems変数として渡したjson 
+// 例） [{"item":"🍛"},{"item":"🍟"}]
+
+&lt;%= items.map((v) => v.icon)  %&gt;</pre>
+      <big><%= items.map((v) => v.icon) %></big>
+    </div>
+    <ul style="display:grid;grid-template: 'a a a a';">
+      <li>
+        <form action="/replace" method="POST">
+          <select style="font-size:1.6em;padding:0.2em" name="selectedItem">
+            <% [`🥞`,`🍔`,`🥙`,`🍕`,`🍤`,`🍜`,`🍣`,`🦪`,`🍙`,`🍖`,`🍟`,`🍛`,`🥐`].map((v) => { %>
+            <option value="<%= v %>" <%= params.selectedItem === v ? `selected`:`` %>><%- `${v}` %></option>
+            <% }) %>
+          </select>
+          <p><button <%= !items.length?`disabled`:``%> type="submit">Replace first item</button></p>
+          <p><button type="submit" formaction="/unshift">Unshift</button>
+            <button type="submit" formaction="/push">Push</button>
+          </p>
+
+        </form>
+      </li>
+      <li>
+        <form action="/delete" method="POST">
+          <select style="font-size:1.6em;padding:0.2em" name="delete">
+            <% [...Array(items.length)].map((v,i) => { %>
+            <option value="<%= i %>"><%= i %></option>
+            <% }) %>
+          </select>
+          <p><button <%= !items.length?`disabled`:``%> type="submit">Delete item at selected index</button></p>
+        </form>
+      </li>
+      <li></li>
+    </ul>
+  </article>
+
+  <article>
+    <hr>
+    <h1>POSTテスト txt操作</h1>
+    <div style="background:#eee;padding:1em;border-radius:0.3em;">
+      <pre>// txtファイル</pre>
+      <big><%= database %></big>
+    </div>
+    <ul style="display:grid;grid-template: 'a a a a';">
+      <li>
+        <form action="/overwrite" method="POST">
+          <input type="text" value="" name="overwrite">
+          <p><button type="submit">Overwrite txt file</button></p>
+        </form>
+      </li>
+    </ul>
+  </article>
+  <article>
+    <hr>
+    <h1>ループ出力のテスト</h1>
+    <pre>
+      &lt;% [...Array(1000)].map((v,i) => { %&gt;
+      &lt;%= ("000"+i).slice(-3) %&gt;
+      &lt;% }) %&gt;
+    </pre>
+    <% [...Array(1000)].map((v,i) => { %>
+    <%= ("000"+i).slice(-3) %>
+    <% }) %>
+  </article>
+
+  <%- include(`footer`) -%>
+
+</body>
+
+</html>

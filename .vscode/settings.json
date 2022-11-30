@@ -1,0 +1,20 @@
+{
+  // "typescript.tsdk": "./node_modules/typescript/lib", //強制的にプロジェクトのtsを使う
+  // "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": true,
+  "eslint.packageManager": "npm",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "[html]": {
+    "editor.defaultFormatter": "j69.ejs-beautify"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
