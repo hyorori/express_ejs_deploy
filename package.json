@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "startRemote":"node app.js",
     "start": "npm-run-all --parallel start:*",
     "start:nodemon": "nodemon app.js",
     "start:sync": "browser-sync start --proxy http://localhost:3333 --port 3003 --files='./**/*'"
