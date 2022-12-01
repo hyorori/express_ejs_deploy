@@ -22,110 +22,115 @@
     パラメータ
     <%= JSON.stringify(params) %>
   </div>
-  <article>
-    <hr>
-    <h1>POSTテスト json操作</h1>
-    <div class="preview-box">
-      <pre>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2em;">
+    <article>
+      <hr>
+      <h1>DBデータ連携</h1>
+      <p>※絵文字非対応</p>
+      <% if(dbItems){ %>
+      <div class="preview-box">
+        <table>
+          <thead>
+            <tr>
+              <th>id</th>
+              <th width="100">name</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% dbItems.map((v,i) => { %>
+            <tr>
+              <td>[<%= v.id%>] </td>
+              <td><%= v.name%></td>
+              <td>
+                <form method="POST" action="/deleteDbItem">
+                  <button name="id" value="<%= v.id%>" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <p>
+      <form method="POST" action="/addDbItem">
+        name <input name="name" value="<%= params.name || ``%>" />
+        <button type="submit">Add</button>
+      </form>
+      </p>
+      <% } else { %>
+      <p>データベース接続が無効です</p>
+      <% } %>
+    </article>
+    <article>
+      <hr>
+      <h1>POSTテスト json操作</h1>
+      <div class="preview-box">
+        <pre>
 // サーバーからitems変数として渡したjson 
 // 例） [{"item":"🍛"},{"item":"🍟"}]
 
 &lt;%= items.map((v) => v.icon)  %&gt;</pre>
-      <big><%= items.map((v) => v.icon) %></big>
-    </div>
-    <ul style="display:grid;grid-template: 'a a a a';">
-      <li>
-        <form action="/replace" method="POST">
-          <select style="font-size:1.6em;padding:0.2em" name="selectedItem">
-            <% [`🥞`,`🍔`,`🥙`,`🍕`,`🍤`,`🍜`,`🍣`,`🦪`,`🍙`,`🍖`,`🍟`,`🍛`,`🥐`].map((v) => { %>
-            <option value="<%= v %>" <%= params.selectedItem === v ? `selected`:`` %>><%- `${v}` %></option>
-            <% }) %>
-          </select>
-          <p><button <%= !items.length?`disabled`:``%> type="submit">Replace first item</button></p>
-          <p><button type="submit" formaction="/unshift">Unshift</button>
-            <button type="submit" formaction="/push">Push</button>
-          </p>
+        <big><%= items.map((v) => v.icon) %></big>
+      </div>
+      <ul style="display:grid;grid-template: 'a a a a';">
+        <li>
+          <form action="/replace" method="POST">
+            <select style="font-size:1.6em;padding:0.2em" name="selectedItem">
+              <% [`🥞`,`🍔`,`🥙`,`🍕`,`🍤`,`🍜`,`🍣`,`🦪`,`🍙`,`🍖`,`🍟`,`🍛`,`🥐`].map((v) => { %>
+              <option value="<%= v %>" <%= params.selectedItem === v ? `selected`:`` %>><%- `${v}` %></option>
+              <% }) %>
+            </select>
+            <p><button <%= !items.length?`disabled`:``%> type="submit">Replace first item</button></p>
+            <p><button type="submit" formaction="/unshift">Unshift</button>
+              <button type="submit" formaction="/push">Push</button>
+            </p>
 
-        </form>
-      </li>
-      <li>
-        <form action="/delete" method="POST">
-          <select style="font-size:1.6em;padding:0.2em" name="delete">
-            <% [...Array(items.length)].map((v,i) => { %>
-            <option value="<%= i %>"><%= i %></option>
-            <% }) %>
-          </select>
-          <p><button <%= !items.length?`disabled`:``%> type="submit">Delete item at selected index</button></p>
-        </form>
-      </li>
-      <li></li>
-    </ul>
-  </article>
+          </form>
+        </li>
+        <li>
+          <form action="/delete" method="POST">
+            <select style="font-size:1.6em;padding:0.2em" name="delete">
+              <% [...Array(items.length)].map((v,i) => { %>
+              <option value="<%= i %>"><%= i %></option>
+              <% }) %>
+            </select>
+            <p><button <%= !items.length?`disabled`:``%> type="submit">Delete item at selected index</button></p>
+          </form>
+        </li>
+        <li></li>
+      </ul>
+    </article>
+    <article>
+      <hr>
+      <h1>POSTテスト txt操作</h1>
+      <div class="preview-box">
+        <pre>// txtファイル</pre>
+        <big><%= txt %></big>
+      </div>
+      <ul style="display:grid;grid-template: 'a a a a';">
+        <li>
+          <form action="/overwrite" method="POST">
+            <input type="text" value="" name="overwrite">
+            <p><button type="submit">Overwrite txt file</button></p>
+          </form>
+        </li>
+      </ul>
+    </article>
 
-  <article>
-    <hr>
-    <h1>POSTテスト txt操作</h1>
-    <div class="preview-box">
-      <pre>// txtファイル</pre>
-      <big><%= txt %></big>
-    </div>
-    <ul style="display:grid;grid-template: 'a a a a';">
-      <li>
-        <form action="/overwrite" method="POST">
-          <input type="text" value="" name="overwrite">
-          <p><button type="submit">Overwrite txt file</button></p>
-        </form>
-      </li>
-    </ul>
-  </article>
-  <article>
-    <hr>
-    <h1>DBデータ出力テスト</h1>
-    <div class="preview-box">
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th width="100">name</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% (dbItems||[]).map((v,i) => { %>
-          <tr>
-            <td><%= v.id%></td>
-            <td><%= v.name%></td>
-            <td>
-              <form method="POST" action="/deleteDbItem">
-                <button name="id" value="<%= v.id%>" type="submit">Delete</button>
-              </form>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-    <p>
-    <form method="POST" action="/addDbItem">
-      name <input name="name" value="" />
-      <button type="submit">Add</button>
-    </form>
-    </p>
-
-  </article>
-  <article>
-    <hr>
-    <h1>ループ出力のテスト</h1>
-    <pre>
+    <article>
+      <hr>
+      <h1>ループ出力のテスト</h1>
+      <pre>
       &lt;% [...Array(1000)].map((v,i) => { %&gt;
       &lt;%= ("000"+i).slice(-3) %&gt;
       &lt;% }) %&gt;
     </pre>
-    <% [...Array(1000)].map((v,i) => { %>
-    <%= ("000"+i).slice(-3) %>
-    <% }) %>
-  </article>
-
+      <% [...Array(1000)].map((v,i) => { %>
+      <%= ("000"+i).slice(-3) %>
+      <% }) %>
+    </article>
+  </div>
   <%- include(`footer`) -%>
 
 </body>

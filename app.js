@@ -48,9 +48,10 @@ const onTop = async (req, res, params = {}) => {
   // res.send(`😀😀`)
   items = require(MYPATH.ITEMS) // * json読み込み
   txt = fs.readFileSync(MYPATH.TXT, `utf-8`) // * txt読み込み
-  const dbItems = await fetchDbItems()
 
-  console.log("!results", err, dbItems)
+  const dbItems = await fetchDbItems() // * DBデータ取得
+
+  console.log("[results]", dbItems)
   res.render(`index`, { items, txt, params, dbItems }) // * ejsのレンダリング
 }
 
@@ -97,6 +98,24 @@ app.post(`/overwrite`, (req, res) => {
     res.redirect(307, `/`)
   })
 })
+
+// ## 😀 deleteDbItem
+app.post(`/deleteDbItem`, (req, res) => {
+  const id = parseInt(req.body.id)
+
+  if (isNaN(id)) return
+
+  console.log("req.body.id", id)
+
+  // * DB内容: itemsテーブルから*(すべてのカラム)を取得
+
+  connection.query(`delete from items where id = ${id}`, async (err) => {
+    const dbItems = await fetchDbItems()
+    console.log("deleteDbItem results", dbItems)
+    res.redirect(307, `/`)
+  })
+})
+
 // ## 😀 addDbItem
 app.post(`/addDbItem`, (req, res) => {
   if (!req.body.name) return
@@ -105,13 +124,12 @@ app.post(`/addDbItem`, (req, res) => {
   // * DB内容: itemsテーブルから*(すべてのカラム)を取得
 
   connection.query(
-    `insert into items values(${Math.random().toString().slice(-10)},'${
-      req.body.name
-    }')`,
+    `insert into items values (null,'${req.body.name}')`,
     async (err) => {
       const dbItems = await fetchDbItems()
-      console.log("addDbItem results", err, dbItems)
-      res.render(`index`, { items, txt, params, dbItems }) // * ejsのレンダリング
+      console.log("addDbItem results", dbItems)
+      res.redirect(307, `/`)
+      // res.render(`index`, { items, txt, params, dbItems }) // * ejsのレンダリング
     }
   )
 })
@@ -120,7 +138,8 @@ const fetchDbItems = () =>
   new Promise((resolve, reject) => {
     // * DB内容: itemsテーブルから*(すべてのカラム)を取得
     connection.query(`SELECT * FROM items`, (err, results) => {
-      if (err) reject(err)
+      if (err) resolve(null)
+      if (!Array.isArray(results)) resolve([])
       resolve(results)
     })
   })
