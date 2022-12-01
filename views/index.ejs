@@ -6,6 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ejs sample</title>
+  <style>
+    .preview-box {
+      background: #eee;
+      padding: 1em;
+      border-radius: 0.3em;
+    }
+  </style>
 </head>
 
 <body>
@@ -18,7 +25,7 @@
   <article>
     <hr>
     <h1>POSTテスト json操作</h1>
-    <div style="background:#eee;padding:1em;border-radius:0.3em;">
+    <div class="preview-box">
       <pre>
 // サーバーからitems変数として渡したjson 
 // 例） [{"item":"🍛"},{"item":"🍟"}]
@@ -58,9 +65,9 @@
   <article>
     <hr>
     <h1>POSTテスト txt操作</h1>
-    <div style="background:#eee;padding:1em;border-radius:0.3em;">
+    <div class="preview-box">
       <pre>// txtファイル</pre>
-      <big><%= database %></big>
+      <big><%= txt %></big>
     </div>
     <ul style="display:grid;grid-template: 'a a a a';">
       <li>
@@ -70,6 +77,41 @@
         </form>
       </li>
     </ul>
+  </article>
+  <article>
+    <hr>
+    <h1>DBデータ出力テスト</h1>
+    <div class="preview-box">
+      <table>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th width="100">name</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (dbItems||[]).map((v,i) => { %>
+          <tr>
+            <td><%= v.id%></td>
+            <td><%= v.name%></td>
+            <td>
+              <form method="POST" action="/deleteDbItem">
+                <button name="id" value="<%= v.id%>" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <p>
+    <form method="POST" action="/addDbItem">
+      name <input name="name" value="" />
+      <button type="submit">Add</button>
+    </form>
+    </p>
+
   </article>
   <article>
     <hr>

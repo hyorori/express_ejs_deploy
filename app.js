@@ -1,19 +1,40 @@
 const fs = require(`fs`)
 const express = require(`express`)
+const mysql = require(`mysql`)
+const { resolve } = require("path")
+
 const app = express()
 const PORT = process.env.PORT || 3333
 const MYPATH = {
   VIEWS: `${__dirname}/views`,
   ITEMS: `${__dirname}/items.json`,
-  DB: `${__dirname}/database.txt`,
+  TXT: `${__dirname}/database.txt`,
 }
 
+// # DB設定
+const DB_CONFIG = {
+  host: `localhost`,
+  user: `root`,
+  password: `wahuu4819`,
+  database: `dev_express_ejs`,
+}
+const connection = mysql.createConnection(DB_CONFIG)
+
+connection.connect((dbErr) => {
+  if (dbErr) {
+    console.log(`🍕`, dbErr.stack)
+    return
+  }
+})
 // # 基本設定
 
 app.set(`view engine`, `ejs`) // * テンプレートエンジンにejs指定
 app.use(express.urlencoded({ extended: true })) // * POSTリクエスト解析
 
+let dbItems = []
+let params = {}
 let items = require(MYPATH.ITEMS) // * json読み込み
+let txt = fs.readFileSync(MYPATH.TXT, `utf-8`) // * txt読み込み
 
 // # ルーティング
 
@@ -23,11 +44,14 @@ app.post(`/`, (req, res) => {
   onTop(req, res, req.body)
 })
 
-const onTop = (req, res, params = {}) => {
+const onTop = async (req, res, params = {}) => {
   // res.send(`😀😀`)
   items = require(MYPATH.ITEMS) // * json読み込み
-  const database = fs.readFileSync(MYPATH.DB, `utf-8`) // * txt読み込み
-  res.render(`index`, { items, database, params }) // * ejsのレンダリング
+  txt = fs.readFileSync(MYPATH.TXT, `utf-8`) // * txt読み込み
+  const dbItems = await fetchDbItems()
+
+  console.log("!results", err, dbItems)
+  res.render(`index`, { items, txt, params, dbItems }) // * ejsのレンダリング
 }
 
 // ## 😀 replace
@@ -69,9 +93,36 @@ app.post(`/delete`, (req, res) => {
 // ## 😀 overwrite
 app.post(`/overwrite`, (req, res) => {
   if (!req.body.overwrite) return
-  fs.writeFile(MYPATH.DB, req.body.overwrite, () => {
+  fs.writeFile(MYPATH.TXT, req.body.overwrite, () => {
     res.redirect(307, `/`)
   })
 })
+// ## 😀 addDbItem
+app.post(`/addDbItem`, (req, res) => {
+  if (!req.body.name) return
+  console.log("req.body.name", req.body.name)
+
+  // * DB内容: itemsテーブルから*(すべてのカラム)を取得
+
+  connection.query(
+    `insert into items values(${Math.random().toString().slice(-10)},'${
+      req.body.name
+    }')`,
+    async (err) => {
+      const dbItems = await fetchDbItems()
+      console.log("addDbItem results", err, dbItems)
+      res.render(`index`, { items, txt, params, dbItems }) // * ejsのレンダリング
+    }
+  )
+})
+
+const fetchDbItems = () =>
+  new Promise((resolve, reject) => {
+    // * DB内容: itemsテーブルから*(すべてのカラム)を取得
+    connection.query(`SELECT * FROM items`, (err, results) => {
+      if (err) reject(err)
+      resolve(results)
+    })
+  })
 
 app.listen(PORT, () => {})
